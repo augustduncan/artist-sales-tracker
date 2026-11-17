@@ -1,3 +1,1 @@
 # artist-sales-tracker
-
-test

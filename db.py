@@ -1,4 +1,6 @@
 import sqlite3
+import pandas as pd 
+import streamlit as st
 from pathlib import Path
 
 DB = Path("art.db")  
@@ -57,6 +59,7 @@ TEST_DATA = """
     INSERT INTO 
     VALUES ();
 
+    -- transaction table probably need to be last since it references all other rables
     INSERT INTO 
     VALUES ();
 
@@ -69,6 +72,8 @@ def connect():
     if not DB.exists():
         build = sqlite3.connect(DB)
         build.executescript(SCHEMA)
+        #can toggle the following on and off as needed:
+        #build.executescript(TEST_DATA)
         build.commit()
         build.close()
     conn = sqlite3.connect(DB)

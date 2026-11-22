@@ -7,7 +7,8 @@ conn = connect()
 
 st.title("Art Sales Tracker")
 st.write("Pick a page in the sidebar.")
-# st.caption(f"Logs with no bed: {queries.orphan_count(conn)}")
+
+st.dataframe(queries.show_inventory(conn))
 
 if st.button("Reset"):
     conn.close()

@@ -1,6 +1,4 @@
 import sqlite3
-import pandas as pd 
-import streamlit as st
 from pathlib import Path
 
 DB = Path("art.db")
@@ -35,14 +33,19 @@ SCHEMA = """
 
     CREATE TABLE transactions (
         transaction_id INTEGER PRIMARY KEY,
-        item_id INTEGER NOT NULL REFERENCES inventory(item_id),
         event_id INTEGER REFERENCES event(event_id),
         customer_id INTEGER REFERENCES customer(customer_id),
-        quantity INTEGER NOT NULL DEFAULT 1,
-        amount_paid REAL NOT NULL,
-        method TEXT,
         date TEXT,
         note TEXT
+    );
+
+    CREATE TABLE sale (
+        sale_id INTEGER PRIMARY KEY,
+        transaction_id INTEGER REFERENCES transactions(transaction_id),
+        item_id INTEGER NOT NULL REFERENCES inventory(item_id), --dropdown
+        quantity INTEGER NOT NULL DEFAULT 1,
+        amount_paid REAL NOT NULL, --autofill with basepricce
+        method TEXT
     );
 """
 
@@ -64,17 +67,21 @@ TEST_DATA = """
         ('august duncan', 'august@email.com', '864-775-1234'),
         ('jackie yeargin', 'jackie@email.com', NULL);
 
-    -- transaction table probably need to be last since it references all other tables
-    -- i think we will have to rethink the 'amount paid' column, since when someone buys two different items it gets messy / inconvient
-    INSERT INTO transactions(item_id, event_id, customer_id, quantity, amount_paid, method, date)
+    INSERT INTO transactions(event_id, customer_id, date)
+    VALUES
+        (1, 2, '2026-11-22'),
+        (1, 2, '2026-11-22'),
+        (2, 1, '2026-11-04'),
+        (2, NULL, '2026-11-15');
+
+    INSERT INTO sale(transaction_id, item_id, quantity, amount_paid, method)
     VALUES 
-        (1, 2, 1, 4, 12.75, 'cash', '2026-11-22'),
-        (3, 2, 1, 2, 17, 'cash', '2026-11-22'),
-        (2, 1, NULL, 1, 35, 'card', '2026-11-04'),
-        (4, NULL, 2, 1, 10, 'venmo', '2026-11-15');
-
-
-
+        (1, 4, 2, 12.75, 'cash'),
+        (2, 2, 1, 17, 'cash'),
+        (3, 1, 1, 35, 'card'),
+        (NULL, 1, 1, 10, 'venmo'),
+        (4, 3, 15, 1, 'venmo'),
+        (4, 3, 15, 2, 'venmo');
 """
 
 
